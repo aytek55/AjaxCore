@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <div id="tablo" class="col-md-6">
+        @*tablo*@
+    </div>
+
+    <div id="kullanicidetay" class="col-md-6">
+        <div id="kullanicidetayalan">
+            <div class="row">
+                <div class="col-md-4">
+                    <h4 class="text-center lead"> Mevcut Fotoğrafınız</h4>
+                    <img src="" id="resim" alt="" />
+                </div>
+                <div class="col-md-8">
+                    <form>
+                        <input type="hidden" id="kullaniciID" />
+                        <div class="form-group">
+                            <label>AD Soyad : </label>
+                            <input type="text" class="form-control" id="AdSoyad" />
+                        </div>
+                        <div class="form-group">
+                            <button id="btnKaydet" class="btn btn-info btn-sm">Kaydet</button>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="kullaniciekle" class="col-md-6">
+        @* kullanıcı Ekle*@
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script>
+        function getirId(KullaniciId) {
+            $.ajax({
+                url: "/Home/GetirId",
+                type: "Get",
+                contentType: "application/json; charset = utf-8",
+                dataType: "json",
+                data: { KullaniciId: KullaniciId },
+                success: function (data) {
+                    $("#kullanicidetayalan").fadeIn(500);
+                    let gelennesne = jQuery.parseJSON(data);
+                    $("#resim").attr("src","/img/" + gelennesne.Resimad);
+                    $("#AdSoyad").val(gelennesne.AdSoyad);
+                }
+            })
+        }
+        $(document).ready(function () {
+            $.ajax({
+                url: 'Home/GetirHepsi',
+                contentType: 'application/json; utf-8;',
+                type: 'Get',
+                dataType: 'json',
+                success: function (data) {
+                    let Obje = jQuery.parseJSON(data);
+                    //console.log(data);
+
+                    let table = `<table class='table table-bordered table-sm'> <tr> <th> ID </th> <th> AD SOYAD </th> <th> RESİM </th> <th> İşlem </th>`
+                    $.each(Obje, (index, value) => {
+                        //console.log(value.ID);
+                        table += `<tr> <td> ${value.ID} </td> <td> ${value.AdSoyad} </td> <td> <img src=' /img/${value.ResimAd}' class='w-25 img-fluid' /> </td>  <td> <button onclick='getirId(${value.ID})' class="btn btn-info btn-sm">Getir</button> </td>  </tr>`
+                    });
+
+                    table += '</table>';
+
+                    $("#tablo").html(table);
+                }
+
+
+            })
+        });
+
+    </script>
+}
